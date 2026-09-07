@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="โดรนพ่นยา">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>โดรนพ่นยา</title>
+<style>
+:root{
+  --blue:#087bf0; --green:#14b85a; --orange:#ff8508; --purple:#7b36db;
+  --ink:#131b2a; --muted:#7c879a; --line:#e7ebf1; --bg:#f4f7fb;
+  --red:#ef3156;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.page{display:none}.page.active{display:block}
+.wrap{max-width:760px;margin:auto}
+.hero{
+  height:330px;background:url('hero.jpg') center/cover no-repeat;position:relative;color:white;
+  display:flex;flex-direction:column;justify-content:flex-end;padding:24px 18px 28px;overflow:hidden
+}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,45,35,.58))}
+.hero-content{position:relative;z-index:1;text-align:center}
+.logo-line{font-size:42px;font-weight:1000;letter-spacing:-1px;text-shadow:0 3px 10px rgba(0,0,0,.4)}
+.hero-sub{font-size:17px;font-weight:800;margin-top:2px}
+.hero-tag{font-size:13px;font-weight:700;margin-top:3px}
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:-28px 16px 16px;position:relative;z-index:2}
+.quick-card{border:0;border-radius:24px;padding:20px 16px;color:white;min-height:128px;box-shadow:0 9px 24px rgba(17,41,80,.18);display:flex;flex-direction:column;justify-content:space-between}
+.quick-card .ico{font-size:34px}.quick-card b{font-size:20px}.quick-card small{font-size:12px;opacity:.94}
+.q-green{background:linear-gradient(135deg,#04b84f,#18c76d)}.q-blue{background:linear-gradient(135deg,#0978ef,#0061d8)}
+.q-orange{background:linear-gradient(135deg,#ff8f08,#ff7100)}.q-purple{background:linear-gradient(135deg,#8a43e2,#6b2bc7)}
+.card{background:#fff;border:1px solid var(--line);border-radius:24px;margin:0 16px 14px;padding:16px;box-shadow:0 5px 20px rgba(41,61,90,.05)}
+.title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.title{font-size:21px;font-weight:900}.muted{color:var(--muted);font-size:13px}
+.pill-btn{background:#eef6ff;color:var(--blue);border:1px solid #cbe4ff;padding:9px 13px;border-radius:13px;font-weight:800}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0}
+.metric{border-radius:17px;padding:12px;text-align:center}.metric span{display:block;font-size:12px;color:#738095}.metric b{display:block;font-size:20px;margin-top:4px}
+.m-blue{background:#e9f4ff}.m-green{background:#e9faee}.m-pink{background:#fff0f3}
+.period{border-radius:16px;overflow:hidden;margin:10px 0;border:1px solid var(--line)}
+.period-head{color:white;padding:10px 12px;font-weight:900;display:flex;justify-content:space-between}
+.ph-morning{background:#28b51f}.ph-afternoon{background:#ff7900}.ph-evening{background:#138bef}
+.jobrow{display:grid;grid-template-columns:62px 1fr auto 38px;align-items:center;gap:8px;padding:11px 10px;border-top:1px solid var(--line);background:white}
+.time{font-weight:900}.name{font-weight:850}.place{font-size:12px;color:var(--muted);margin-top:2px}.rai{font-weight:900;white-space:nowrap}.phone{font-size:22px;text-decoration:none}
+.add-btn{width:100%;background:#e9f4ff;color:var(--blue);border:1px solid #bddcff;border-radius:16px;padding:14px;font-size:17px;font-weight:900}
+.screen-head{position:sticky;top:0;z-index:4;background:rgba(255,255,255,.96);backdrop-filter:blur(18px);padding:14px 16px;border-bottom:1px solid var(--line);font-size:22px;font-weight:900;text-align:center}
+.form-card{background:#fff;border-radius:0;margin:0;padding:16px}
+label{display:block;color:#5f6b7f;font-size:13px;margin:12px 0 6px}
+input,textarea,select{width:100%;border:1px solid #dce3ec;background:#fafcff;border-radius:13px;padding:12px 13px;font-size:16px;color:var(--ink);outline:none}
+input:focus,textarea:focus{border-color:var(--blue);background:#fff}textarea{min-height:88px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.primary{width:100%;border:0;border-radius:14px;background:var(--blue);color:white;font-size:17px;font-weight:900;padding:13px;margin-top:14px}.secondary{background:#edf2f7;color:#33415c}.danger{background:#ffedf0;color:#d83251}
+.list-card{background:white;margin-top:12px}.item{padding:12px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}.item-top{display:flex;justify-content:space-between;gap:12px}.item .actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.item .actions button{margin-top:8px;padding:9px;border:0;border-radius:10px;font-weight:800}
+.finance-top{background:#fff;padding:16px}.finance-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.fbox{border-radius:17px;padding:13px;text-align:center}.fbox span{display:block;font-size:12px}.fbox b{display:block;font-size:19px;margin-top:5px}.income{background:#e9faee;color:#128b40}.expense{background:#fff0f3;color:#e12e55}.profit{background:#e9f4ff;color:#0768c7}
+.rank{display:grid;grid-template-columns:36px 1fr auto;gap:9px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}.rank:first-child{border:0}.rank-no{width:30px;height:30px;border-radius:9px;background:#edf5ff;color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:900}.rank-rai{font-weight:900;color:var(--blue)}
+.settings-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line)}.settings-row:first-child{border-top:0}.settings-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}.settings-txt{flex:1;font-weight:800}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);border-top:1px solid #e4e9f0;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 5px calc(6px + env(safe-area-inset-bottom))}
+.tabs button{border:0;background:transparent;color:#98a2af;padding:5px 2px;font-size:10px;font-weight:700}.tabs button.active{color:var(--blue)}.tabs .ico{font-size:20px;display:block;margin-bottom:2px}
+.empty{text-align:center;color:var(--muted);padding:22px 6px}
+.install{display:none}.install.show{display:block}
+
+/* === V2: UI matched to the approved reference === */
+body{background:#f4f7fb}
+.hero{
+  height:300px;
+  background:url('hero.jpg') center 46%/cover no-repeat;
+  padding:0;
+  display:block;
+  border-radius:0;
+}
+.hero:after{display:none}
+.hero-content{display:none}
+.quick{
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin:-42px 12px 14px;
+}
+.quick-card{
+  min-height:150px;
+  border-radius:22px;
+  padding:15px 10px 13px;
+  align-items:flex-start;
+  text-align:left;
+}
+.quick-card .ico{font-size:32px;align-self:center;margin-top:2px}
+.quick-card b{font-size:16px;line-height:1.15}
+.quick-card small{font-size:10.5px;line-height:1.2}
+.card{
+  border-radius:24px;
+  margin:0 12px 14px;
+  padding:15px;
+  box-shadow:0 7px 24px rgba(30,55,90,.07);
+}
+.title{font-size:20px}
+.title-row{align-items:flex-start}
+.pill-btn{width:auto;white-space:nowrap}
+.metrics{gap:8px}
+.metric{padding:12px 5px}
+.metric b{font-size:18px}
+.period{border-radius:15px}
+.period-head{padding:9px 11px;font-size:13px}
+.jobrow{
+  grid-template-columns:58px minmax(0,1fr) auto 34px;
+  padding:11px 8px;
+  gap:6px;
+}
+.phone{font-size:20px}
+.add-btn{font-size:18px;margin-top:8px}
+.tabs button .ico{font-size:19px}
+.tabs button{font-size:10px}
+.screen-head{font-size:20px;padding:13px 16px}
+.install{display:none!important}
+@media (max-width:430px){
+  .hero{height:285px}
+  .quick{margin-top:-38px}
+  .quick-card{min-height:145px;padding:14px 8px 12px}
+  .quick-card b{font-size:15px}
+  .quick-card small{font-size:10px}
+}
+
+
+/* === V3: responsive hero banner, no crop / no overflow === */
+.hero{
+  width:100%;
+  aspect-ratio:1200 / 430;
+  height:auto;
+  min-height:0;
+  background-image:url('hero.jpg');
+  background-repeat:no-repeat;
+  background-position:center center;
+  background-size:contain;
+  background-color:#bfe8ff;
+  padding:0;
+  display:block;
+  overflow:hidden;
+}
+.hero:after{display:none!important}
+.hero-content{display:none!important}
+
+/* Keep menu cards attached neatly below the banner */
+.quick{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin:-18px 12px 14px;
+}
+.quick-card{
+  min-width:0;
+  min-height:138px;
+  border-radius:20px;
+  padding:14px 9px 12px;
+}
+.quick-card .ico{font-size:30px}
+.quick-card b{font-size:15px}
+.quick-card small{font-size:10px}
+
+/* iPhone portrait tuning */
+@media (max-width:430px){
+  .hero{
+    aspect-ratio:1200 / 430;
+    background-size:contain;
+  }
+  .quick{
+    margin-top:-14px;
+    gap:7px;
+  }
+  .quick-card{
+    min-height:132px;
+    padding:13px 7px 11px;
+  }
+  .quick-card b{font-size:14px}
+  .quick-card small{font-size:9.5px}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HOME -->
+<section id="home" class="page active">
+  <div class="hero">
+    <div class="hero-content">
+      <div class="logo-line">โดรนพ่นยา</div>
+      <div class="hero-sub">ตารางงาน & รายรับ–รายจ่าย</div>
+      <div class="hero-tag">“ใช้งานง่าย ครบ จบในแอพเดียว”</div>
+    </div>
+  </div>
+  <div class="quick">
+    <button class="quick-card q-green" data-go="work"><span class="ico">▣</span><span><b>บันทึกงาน</b><br><small>เพิ่ม / แก้ไข / ดูงาน</small></span></button>
+    <button class="quick-card q-blue" data-go="finance"><span class="ico">▰</span><span><b>รายรับ - รายจ่าย</b><br><small>สรุปการเงิน</small></span></button>
+    <button class="quick-card q-orange" data-go="stats"><span class="ico">▥</span><span><b>สถิติ</b><br><small>ดูยอดตามลูกค้า / ตามปี</small></span></button>
+    <button class="quick-card q-purple" data-go="settings"><span class="ico">⚙</span><span><b>ตั้งค่า</b><br><small>ข้อมูลพื้นฐาน / สำรองข้อมูล</small></span></button>
+  </div>
+  
+  <div class="card">
+    <div class="title-row"><div><div class="title">▣ งานวันนี้</div><div class="muted" id="todayDate"></div></div><button class="pill-btn" data-go="work">ดูทั้งหมด ›</button></div>
+    <div class="metrics">
+      <div class="metric m-blue"><span>ทั้งหมด</span><b id="todayJobs">0 งาน</b></div>
+      <div class="metric m-green"><span>รวม</span><b id="todayRai">0 ไร่</b></div>
+      <div class="metric m-pink"><span>รายจ่าย</span><b id="todayExpense">฿0</b></div>
+    </div>
+    <div id="todayList"></div>
+    <button class="add-btn" data-go="work">＋ เพิ่มงานใหม่</button>
+  </div>
+
+  <div class="card">
+    <div class="title-row">
+      <div>
+        <div class="title">▣ งานพรุ่งนี้</div>
+        <div class="muted" id="tomorrowDate"></div>
+      </div>
+      <button class="pill-btn" data-go="work">ดูทั้งหมด ›</button>
+    </div>
+    <div class="metrics">
+      <div class="metric m-blue"><span>ทั้งหมด</span><b id="tomorrowJobs">0 งาน</b></div>
+      <div class="metric m-green"><span>รวม</span><b id="tomorrowRai">0 ไร่</b></div>
+      <div class="metric m-pink"><span>รายจ่าย</span><b id="tomorrowExpense">฿0</b></div>
+    </div>
+    <div id="tomorrowList"></div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work" class="page">
+  <div class="screen-head">บันทึกงาน</div>
+  <div class="form-card">
+    <div class="title" id="formTitle">เพิ่มงาน</div>
+    <label>วันที่</label><input id="date" type="date">
+    <label>ชื่อลูกค้า</label><input id="customer" placeholder="เช่น นายสมชาย">
+    <div class="row"><div><label>จำนวนไร่</label><input id="rai" type="number" inputmode="decimal" step=".01" placeholder="0"></div><div><label>เวลา</label><input id="time" type="time"></div></div>
+    <label>สถานที่</label><input id="workLocation" placeholder="เช่น นาแปลงใหญ่ หมู่ 3">
+    <label>เบอร์โทร</label><input id="phone" type="tel" inputmode="tel" placeholder="0812345678">
+    <label>รายจ่าย</label><input id="expense" type="number" inputmode="decimal" step=".01" placeholder="0">
+    <label>หมายเหตุ (ถ้ามี)</label><textarea id="note" placeholder="เช่น พ่นยา รอบที่ 2"></textarea>
+    <button class="primary" id="saveBtn">บันทึก</button>
+    <button class="primary secondary" id="cancelBtn" style="display:none">ยกเลิกการแก้ไข</button>
+  </div>
+  <div class="card list-card">
+    <div class="title">ตารางงาน</div>
+    <label>เลือกวันที่</label><input id="filterDate" type="date">
+    <button class="primary secondary" id="showAll">แสดงทั้งหมด</button>
+    <div id="workList" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- FINANCE -->
+<section id="finance" class="page">
+  <div class="screen-head">รายรับ - รายจ่าย</div>
+  <div class="finance-top">
+    <label>เลือกเดือน</label><input id="financeMonth" type="month">
+    <div class="finance-grid" style="margin-top:12px">
+      <div class="fbox income"><span>รายรับ</span><b id="mIncome">฿0</b></div>
+      <div class="fbox expense"><span>รายจ่าย</span><b id="mExpense">฿0</b></div>
+      <div class="fbox profit"><span>กำไรสุทธิ</span><b id="mProfit">฿0</b></div>
+    </div>
+  </div>
+  <div class="card"><div class="title">สรุปรายวัน</div><div id="dailyFinance"></div></div>
+</section>
+
+<!-- STATS -->
+<section id="stats" class="page">
+  <div class="screen-head">สถิติรายลูกค้า</div>
+  <div class="card">
+    <label>เลือกปี</label><input id="statsYear" type="number" inputmode="numeric">
+    <div class="metrics">
+      <div class="metric m-blue"><span>จำนวนงาน</span><b id="yJobs">0</b></div>
+      <div class="metric m-green"><span>รวมไร่</span><b id="yRai">0</b></div>
+      <div class="metric m-pink"><span>รายรับรวม</span><b id="yIncome">฿0</b></div>
+    </div>
+    <div id="ranking"></div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+  <div class="screen-head">ตั้งค่า</div><div style="text-align:center;font-size:11px;color:#8a94a3;padding:8px">เวอร์ชัน V6 Tomorrow</div>
+  <div class="card">
+    <div class="settings-row"><div class="settings-ico" style="background:#e9f4ff">⌂</div><div class="settings-txt">ติดตั้งบน iPhone<div class="muted">Safari → แชร์ → เพิ่มไปยังหน้าจอโฮม</div></div></div>
+  </div>
+  <div class="card">
+    <div class="settings-row"><div class="settings-ico" style="background:#e9f4ff">👥</div><div class="settings-txt">ข้อมูลลูกค้า</div><div>›</div></div>
+    <div class="settings-row"><div class="settings-ico" style="background:#fff4df">💰</div><div class="settings-txt">อัตราค่าบริการ <span class="muted">(50 บาท/ไร่)</span></div><div>›</div></div>
+    <div class="settings-row"><div class="settings-ico" style="background:#e9faee">☁️</div><div class="settings-txt">สำรองข้อมูล</div><div>›</div></div>
+    <button class="primary" id="backupBtn">สำรองข้อมูล (.json)</button>
+    <label>กู้คืนข้อมูล</label><input id="restoreFile" type="file" accept=".json,application/json">
+    <button class="primary secondary" id="csvBtn">ส่งออกข้อมูล CSV</button>
+  </div>
+</section>
+</div>
+
+<nav class="tabs">
+  <button class="active" data-page="home"><span class="ico">⌂</span>หน้าหลัก</button>
+  <button data-page="work"><span class="ico">▣</span>งาน</button>
+  <button data-page="finance"><span class="ico">▰</span>การเงิน</button>
+  <button data-page="stats"><span class="ico">▥</span>สถิติ</button>
+  <button data-page="settings"><span class="ico">⚙</span>ตั้งค่า</button>
+</nav>
+
+<script>
+const RATE=50, KEY="droneExactStyleV1", $=id=>document.getElementById(id);
+let editingId=null, filterMode=true;
+function today(){const d=new Date(),z=d.getTimezoneOffset();return new Date(d-z*60000).toISOString().slice(0,10)}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]}}
+function save(x){localStorage.setItem(KEY,JSON.stringify(x))}
+function num(x){return new Intl.NumberFormat("th-TH",{maximumFractionDigits:2}).format(+x||0)}
+function money(x){return new Intl.NumberFormat("th-TH",{style:"currency",currency:"THB",maximumFractionDigits:0}).format(+x||0)}
+function esc(x){const d=document.createElement("div");d.textContent=x||"";return d.innerHTML}
+function fd(x){if(!x)return"";const[y,m,d]=x.split("-");return `${d}/${m}/${y}`}
+function pName(t){const h=parseInt((t||"00").slice(0,2));return h<12?"เช้า":h<17?"บ่าย":"เย็น"}
+function addDays(dateStr,days){
+  const [y,m,d]=dateStr.split("-").map(Number);
+  const dt=new Date(y,m-1,d+days);
+  const z=dt.getTimezoneOffset();
+  return new Date(dt-z*60000).toISOString().slice(0,10);
+}
+function ph(p){return p==="เช้า"?"ph-morning":p==="บ่าย"?"ph-afternoon":"ph-evening"}
+date.value=filterDate.value=today();financeMonth.value=today().slice(0,7);statsYear.value=new Date().getFullYear();
+
+function go(page){
+ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+ document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));
+ $(page).classList.add("active"); document.querySelector(`.tabs button[data-page="${page}"]`)?.classList.add("active");
+ window.scrollTo(0,0); renderAll();
+}
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>go(b.dataset.page));
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+
+function renderToday(){
+ const rows=load().filter(r=>r.date===today()).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+ todayDate.textContent=new Date(today()+"T00:00").toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ todayJobs.textContent=rows.length+" งาน"; todayRai.textContent=num(rows.reduce((s,r)=>s+(+r.rai||0),0))+" ไร่"; todayExpense.textContent=money(rows.reduce((s,r)=>s+(+r.expense||0),0));
+ if(!rows.length){todayList.innerHTML='<div class="empty">วันนี้ยังไม่มีงาน</div>';return}
+ const g={เช้า:[],บ่าย:[],เย็น:[]}; rows.forEach(r=>g[pName(r.time)].push(r));
+ todayList.innerHTML=Object.entries(g).filter(([_,a])=>a.length).map(([p,a])=>`
+ <div class="period"><div class="period-head ${ph(p)}"><span>${p==="เช้า"?"☀️":p==="บ่าย"?"🌤️":"🌙"} ช่วง${p} (${a.length} งาน)</span><span>รวม ${num(a.reduce((s,r)=>s+(+r.rai||0),0))} ไร่</span></div>
+ ${a.map(r=>`<div class="jobrow"><div class="time">${r.time}</div><div><div class="name">${esc(r.customer)}</div><div class="place">${r.location?esc(r.location):""}</div></div><div class="rai">${num(r.rai)} ไร่</div><div>${r.phone?`<a class="phone" href="tel:${String(r.phone).replace(/[^0-9+]/g,"")}">📞</a>`:""}</div></div>`).join("")}</div>`).join("");
+}
+function renderTomorrow(){
+ const td=addDays(today(),1);
+ const rows=load().filter(r=>r.date===td).sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+ tomorrowDate.textContent=new Date(td+"T00:00").toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ tomorrowJobs.textContent=rows.length+" งาน";
+ tomorrowRai.textContent=num(rows.reduce((s,r)=>s+(+r.rai||0),0))+" ไร่";
+ tomorrowExpense.textContent=money(rows.reduce((s,r)=>s+(+r.expense||0),0));
+ if(!rows.length){
+   tomorrowList.innerHTML='<div class="empty">พรุ่งนี้ยังไม่มีงาน</div>';
+   return;
+ }
+ const g={เช้า:[],บ่าย:[],เย็น:[]};
+ rows.forEach(r=>g[pName(r.time)].push(r));
+ tomorrowList.innerHTML=Object.entries(g).filter(([_,a])=>a.length).map(([p,a])=>`
+ <div class="period">
+   <div class="period-head ${ph(p)}">
+     <span>${p==="เช้า"?"☀️":p==="บ่าย"?"🌤️":"🌙"} ช่วง${p} (${a.length} งาน)</span>
+     <span>รวม ${num(a.reduce((s,r)=>s+(+r.rai||0),0))} ไร่</span>
+   </div>
+   ${a.map(r=>`
+     <div class="jobrow">
+       <div class="time">${r.time}</div>
+       <div>
+         <div class="name">${esc(r.customer)}</div>
+         <div class="place">${r.location?esc(r.location):""}</div>
+       </div>
+       <div class="rai">${num(r.rai)} ไร่</div>
+       <div>${r.phone?`<a class="phone" href="tel:${String(r.phone).replace(/[^0-9+]/g,"")}">📞</a>`:""}</div>
+     </div>`).join("")}
+ </div>`).join("");
+}
+function renderWork(){
+ let a=load().sort((x,y)=>(x.date+x.time).localeCompare(y.date+y.time)); if(filterMode&&filterDate.value)a=a.filter(r=>r.date===filterDate.value);
+ workList.innerHTML=a.length?a.map(r=>`<div class="item"><div class="item-top"><div><div class="name">${esc(r.customer)}</div><div class="muted">${fd(r.date)} • ${r.time} • ${num(r.rai)} ไร่</div><div class="muted">${r.location?esc(r.location)+" • ":""}รายจ่าย ${money(r.expense||0)}</div></div><b>${money((+r.rai||0)*RATE)}</b></div><div class="actions"><button class="secondary" data-edit="${r.id}">แก้ไข</button><button class="danger" data-del="${r.id}">ลบ</button></div></div>`).join(""):'<div class="empty">ไม่มีรายการ</div>';
+ document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editRow(b.dataset.edit));document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>delRow(b.dataset.del));
+}
+function renderFinance(){
+ const m=financeMonth.value,a=load().filter(r=>r.date&&r.date.startsWith(m));const inc=a.reduce((s,r)=>s+(+r.rai||0)*RATE,0),ex=a.reduce((s,r)=>s+(+r.expense||0),0);
+ mIncome.textContent=money(inc);mExpense.textContent=money(ex);mProfit.textContent=money(inc-ex);
+ const map={};a.forEach(r=>{map[r.date]??={rai:0,inc:0,ex:0,j:0};map[r.date].rai+=+r.rai||0;map[r.date].inc+=(+r.rai||0)*RATE;map[r.date].ex+=+r.expense||0;map[r.date].j++});
+ dailyFinance.innerHTML=Object.entries(map).sort().map(([d,x])=>`<div class="item"><div class="item-top"><div><div class="name">${fd(d)}</div><div class="muted">${x.j} งาน • ${num(x.rai)} ไร่</div></div><div style="text-align:right"><b style="color:#159447">+${money(x.inc)}</b><div class="muted" style="color:#e33458">-${money(x.ex)}</div></div></div></div>`).join("")||'<div class="empty">ยังไม่มีข้อมูล</div>';
+}
+function renderStats(){
+ const y=String(statsYear.value),a=load().filter(r=>r.date&&r.date.startsWith(y+"-"));yJobs.textContent=a.length;yRai.textContent=num(a.reduce((s,r)=>s+(+r.rai||0),0));yIncome.textContent=money(a.reduce((s,r)=>s+(+r.rai||0)*RATE,0));
+ const m={};a.forEach(r=>{const k=(r.customer||"ไม่ระบุ").trim();m[k]??={j:0,rai:0};m[k].j++;m[k].rai+=+r.rai||0});
+ const z=Object.entries(m).sort((a,b)=>b[1].rai-a[1].rai);
+ ranking.innerHTML=z.map(([n,x],i)=>`<div class="rank"><div class="rank-no">${i+1}</div><div><div class="name">${esc(n)}</div><div class="muted">${x.j} งาน</div></div><div class="rank-rai">${num(x.rai)} ไร่</div></div>`).join("")||'<div class="empty">ยังไม่มีข้อมูลในปีนี้</div>';
+}
+function renderAll(){renderToday();renderTomorrow();renderWork();renderFinance();renderStats()}
+
+saveBtn.onclick=()=>{const c=customer.value.trim(),r=+rai.value,t=time.value;if(!c)return alert("กรุณากรอกชื่อลูกค้า");if(!(r>0))return alert("กรุณากรอกจำนวนไร่");if(!t)return alert("กรุณาเลือกเวลา");const o={id:editingId||Date.now().toString(36)+Math.random().toString(36).slice(2),date:date.value||today(),customer:c,rai:r,time:t,location:$("workLocation").value.trim(),phone:phone.value.trim(),expense:+expense.value||0,note:note.value.trim()};let a=load();if(editingId){const i=a.findIndex(x=>x.id===editingId);a[i]=o}else a.push(o);save(a);filterDate.value=o.date;filterMode=true;resetForm();renderAll();alert("บันทึกเรียบร้อย")};
+function resetForm(){editingId=null;formTitle.textContent="เพิ่มงาน";saveBtn.textContent="บันทึก";cancelBtn.style.display="none";date.value=today();customer.value=rai.value=time.value=phone.value=expense.value=note.value="";$("workLocation").value=""}
+function editRow(id){const r=load().find(x=>x.id===id);if(!r)return;editingId=id;formTitle.textContent="แก้ไขงาน";saveBtn.textContent="บันทึกการแก้ไข";cancelBtn.style.display="block";date.value=r.date;customer.value=r.customer;rai.value=r.rai;time.value=r.time;$("workLocation").value=r.location||"";phone.value=r.phone||"";expense.value=r.expense||"";note.value=r.note||"";go("work")}
+function delRow(id){if(confirm("ลบรายการนี้ใช่ไหม?")){save(load().filter(x=>x.id!==id));renderAll()}}
+cancelBtn.onclick=resetForm;filterDate.onchange=()=>{filterMode=true;renderWork()};showAll.onclick=()=>{filterMode=false;renderWork()};financeMonth.onchange=renderFinance;statsYear.oninput=renderStats;
+backupBtn.onclick=()=>{const blob=new Blob([JSON.stringify({app:"Drone Work Exact Style V3",version:1,rate:RATE,records:load()},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="drone-backup-"+today()+".json";a.click()};
+restoreFile.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text()),a=Array.isArray(x)?x:x.records;if(!Array.isArray(a))throw 0;if(confirm("แทนที่ข้อมูลปัจจุบันด้วยไฟล์สำรองใช่ไหม?")){save(a);renderAll();alert("กู้คืนเรียบร้อย")}}catch{alert("ไฟล์ไม่ถูกต้อง")}e.target.value=""};
+csvBtn.onclick=()=>{const a=load();if(!a.length)return alert("ยังไม่มีข้อมูล");const out=[["วันที่","ชื่อ","ไร่","เวลา","สถานที่","เบอร์โทร","รายรับ","รายจ่าย"]];a.forEach(r=>out.push([r.date,r.customer,r.rai,r.time,r.location||"",r.phone||"",r.rai*RATE,r.expense||0]));const blob=new Blob(["\ufeff"+out.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n")],{type:"text/csv"}),x=document.createElement("a");x.href=URL.createObjectURL(blob);x.download="drone-work-"+today()+".csv";x.click()};
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));
+const installEl=document.getElementById("installCard");if(installEl&&!(matchMedia("(display-mode: standalone)").matches||navigator.standalone))installEl.classList.add("show");
+renderAll();
+</script>
+</body>
+</html>
