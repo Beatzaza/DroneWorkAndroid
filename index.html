@@ -20,7 +20,7 @@
 html,body{margin:0;background:#dcebf0;color:#172d43;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-.app{width:min(560px,100%);min-height:100vh;margin:auto;background:linear-gradient(#f5fbfd,#eff7f8);padding-bottom:98px;box-shadow:0 0 25px #18384d17}
+.app{width:min(560px,100%);min-height:100vh;margin:auto;background:linear-gradient(#f5fbfd,#eff7f8);padding-bottom:150px;box-shadow:0 0 25px #18384d17}
 .view{display:none}.view.active{display:block}
 
 /* KEEP THE ORIGINAL TOP AREA */
@@ -75,6 +75,8 @@ button{cursor:pointer}
 /* SETTINGS / EXPENSES */
 .settingRow{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}.settingRow:last-child{border:0}.settingRow strong{display:block}.settingRow small{color:var(--muted)}
 .expenseMoney{color:#c33845;font-weight:900}
+.customerTable{width:100%;border-collapse:collapse;font-size:13px}.customerTable th,.customerTable td{padding:10px 6px;border-bottom:1px solid var(--line);text-align:right}.customerTable th:first-child,.customerTable td:first-child{text-align:left}.customerTable th{background:#f7fafb;color:#647586}.customerTable td:first-child{font-weight:850}
+.backupActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.backupBtn{border:0;border-radius:14px;padding:13px;font-weight:900}.backupBtn.export{background:#e9f8ee;color:#118a49}.backupBtn.import{background:#eaf4ff;color:#176394}.dangerNote{margin-top:8px;font-size:12px;color:#7b8998}
 
 /* ICON-ONLY BOTTOM NAV */
 .nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:min(560px,100%);padding:10px 18px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
@@ -139,13 +141,23 @@ button{cursor:pointer}
   </div>
   <div class="statCard"><h3 id="chartTitle">กราฟรายเดือน (ไร่)</h3><div class="chart" id="monthChart"></div></div>
   <div class="statCard"><h3>สรุปหลายเดือนย้อนหลัง</h3><div style="overflow:auto"><table class="monthTable"><thead><tr><th>เดือน</th><th>งาน</th><th>รวมไร่</th><th>รายรับ</th><th>รายจ่าย</th></tr></thead><tbody id="monthTableBody"></tbody></table></div></div>
+  <div class="statCard"><h3>สรุปตามรายชื่อ</h3><div style="overflow:auto"><table class="customerTable"><thead><tr><th>รายชื่อ</th><th>งาน</th><th>รวมไร่</th><th>รายรับ</th></tr></thead><tbody id="customerTableBody"></tbody></table></div></div>
 </section>
 
 <section id="settings" class="view">
   <div class="pageTop"><h1>ตั้งค่า</h1><p>ข้อมูลพื้นฐานและค่าใช้จ่าย</p></div>
   <div class="settingsCard">
     <div class="settingRow"><div><strong>อัตราค่าบริการ</strong><small>คำนวณค่าบริการอัตโนมัติ</small></div><b>50 บาท/ไร่</b></div>
-    <div class="settingRow"><div><strong>เวอร์ชั่น</strong><small>เลเอาต์ใหม่ + สถิติหลายเดือน</small></div><b>v6</b></div>
+    <div class="settingRow"><div><strong>เวอร์ชั่น</strong><small>เพิ่มสถิติรายชื่อ + สำรองข้อมูล</small></div><b>v6.1</b></div>
+  </div>
+  <div class="settingsCard">
+    <h3 style="margin:0 0 5px">สำรองข้อมูล</h3>
+    <div class="backupActions">
+      <button class="backupBtn export" type="button" onclick="exportBackup()">⬇️ สำรองข้อมูล</button>
+      <button class="backupBtn import" type="button" onclick="document.getElementById('backupFile').click()">⬆️ กู้คืนข้อมูล</button>
+    </div>
+    <input id="backupFile" type="file" accept="application/json,.json" style="display:none" onchange="importBackup(event)">
+    <div class="dangerNote">ไฟล์สำรองจะเก็บรายการงานทั้งหมดไว้ในรูปแบบ JSON และกู้คืนกลับเข้าแอปได้</div>
   </div>
   <div class="settingsCard"><h3 style="margin:0 0 5px">รายการค่าใช้จ่าย</h3><div id="expenseList"></div></div>
 </section>
@@ -221,6 +233,40 @@ function monthSeries(a,count=9){
   for(let i=count-1;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1),k=monthKey(d),items=a.filter(j=>jobMonth(j)===k);arr.push({k,...summary(items)})}
   return arr
 }
+
+function customerSummary(items){
+  const map=new Map();
+  for(const j of items){
+    const name=(j.name||'ไม่ระบุชื่อ').trim()||'ไม่ระบุชื่อ';
+    if(!map.has(name))map.set(name,{name,jobs:0,rai:0,income:0});
+    const x=map.get(name); x.jobs+=1; x.rai+=Number(j.rai)||0; x.income+=(Number(j.rai)||0)*RATE;
+  }
+  return [...map.values()].sort((a,b)=>b.rai-a.rai || a.name.localeCompare(b.name,'th'));
+}
+function exportBackup(){
+  const payload={app:'FT ตารางงาน',version:'6.1',exportedAt:new Date().toISOString(),rate:RATE,data:load()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  const d=new Date(),stamp=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  a.href=url;a.download='FT_backup_'+stamp+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('สร้างไฟล์สำรองแล้ว ✓')
+}
+function importBackup(event){
+  const file=event.target.files&&event.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const parsed=JSON.parse(reader.result);
+      const data=Array.isArray(parsed)?parsed:(Array.isArray(parsed.data)?parsed.data:null);
+      if(!data)throw new Error('รูปแบบไฟล์ไม่ถูกต้อง');
+      if(confirm('กู้คืนข้อมูลจากไฟล์นี้ใช่ไหม? ข้อมูลปัจจุบันจะถูกแทนที่')){
+        save(data);toast('กู้คืนข้อมูลแล้ว ✓');showView('home')
+      }
+    }catch(e){alert('ไม่สามารถกู้คืนไฟล์นี้ได้')}
+    event.target.value='';
+  };
+  reader.readAsText(file);
+}
+
 function renderStats(a){
   const now=new Date(), td=localDate(), mk=monthKey(now), year=String(now.getFullYear());
   let items=a;
@@ -234,7 +280,9 @@ function renderStats(a){
   $('#monthChart').innerHTML=series.map(x=>`<div class="barWrap"><div class="barVal">${num(x.rai)}</div><div class="bar" style="height:${Math.max(2,x.rai/max*150)}px"></div><div class="barLabel">${monthName(x.k,true)}</div></div>`).join('');
   $('#chartTitle').textContent='กราฟรายเดือน (ไร่)';
 
-  $('#monthTableBody').innerHTML=series.slice().reverse().map(x=>`<tr class="${x.k===mk?'current':''}"><td>${monthName(x.k)}</td><td>${x.jobs}</td><td>${num(x.rai)}</td><td>${num(x.income)}</td><td>${num(x.expense)}</td></tr>`).join('')
+  $('#monthTableBody').innerHTML=series.slice().reverse().map(x=>`<tr class="${x.k===mk?'current':''}"><td>${monthName(x.k)}</td><td>${x.jobs}</td><td>${num(x.rai)}</td><td>${num(x.income)}</td><td>${num(x.expense)}</td></tr>`).join('');
+  const customers=customerSummary(items);
+  $('#customerTableBody').innerHTML=customers.length?customers.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.jobs}</td><td>${num(x.rai)}</td><td>${num(x.income)}</td></tr>`).join(''):`<tr><td colspan="4" style="text-align:center;color:#718294">ยังไม่มีข้อมูล</td></tr>`
 }
 
 function render(){
