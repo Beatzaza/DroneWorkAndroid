@@ -60,6 +60,7 @@ button{cursor:pointer}
 .preview strong{font-size:19px;color:#118a49}.save{width:100%;border:0;border-radius:15px;padding:14px;background:linear-gradient(135deg,#20af59,#138f46);color:#fff;font-weight:900;font-size:17px}
 .cancel{width:100%;border:0;border-radius:15px;padding:12px;background:#edf2f5;color:#4b6072;font-weight:850;margin-top:8px}
 .filterbar{display:flex;gap:8px;overflow:auto;padding:12px 14px 0}.filterbar button{white-space:nowrap;border:0;border-radius:20px;padding:9px 13px;background:#fff;color:#536879;font-weight:850}.filterbar button.active{background:#1f9e52;color:#fff}
+.searchbar{margin:10px 14px 0;background:#fff;border-radius:18px;padding:11px;display:grid;grid-template-columns:1fr 1fr auto;gap:8px;box-shadow:0 5px 16px #294a5c10}.searchbar input{min-width:0;width:100%;border:1.5px solid #dce8ee;background:#fbfdfe;border-radius:12px;padding:11px;font-size:15px}.searchbar button{border:0;border-radius:12px;padding:0 12px;background:#edf2f5;color:#536879;font-weight:850}.searchCount{grid-column:1/-1;font-size:12px;color:var(--muted);padding:0 2px 1px}@media(max-width:430px){.searchbar{grid-template-columns:1fr auto}.searchbar input[type=date]{grid-column:1/-1}.searchCount{grid-column:1/-1}}
 .jobrow{padding:14px 0;border-bottom:1px solid var(--line)}.jobrow:last-child{border:0}.jrTop{display:flex;justify-content:space-between;gap:12px}.jrName{font-size:17px;font-weight:900}.jrMeta{font-size:13px;color:var(--muted);margin-top:5px}.jrMoney{text-align:right;font-weight:900;color:#158349}.actions{display:flex;gap:7px;margin-top:9px}.actions button{border:0;border-radius:10px;padding:7px 10px;font-weight:850}.edit{background:#e7f4ff;color:#156aab}.del{background:#fff0f0;color:#b93543}
 
 /* STATISTICS */
@@ -112,6 +113,7 @@ button{cursor:pointer}
 <section id="jobs" class="view">
   <div class="pageTop"><h1>ตารางงาน</h1><p>ดู เพิ่ม แก้ไข และลบงานทั้งหมด</p></div>
   <div class="filterbar"><button class="active" data-filter="all">ทั้งหมด</button><button data-filter="today">วันนี้</button><button data-filter="tomorrow">พรุ่งนี้</button><button data-filter="future">งานถัดไป</button></div>
+  <div class="searchbar"><input id="jobSearch" type="search" placeholder="🔍 ค้นหารายชื่อ"><input id="jobSearchDate" type="date" aria-label="ค้นหาตามวันที่"><button id="clearSearch" type="button">ล้าง</button><div class="searchCount" id="searchCount"></div></div>
   <div class="listCard" id="allJobs"></div>
   <button class="addMain" onclick="openAdd()">＋ เพิ่มงานใหม่</button>
 </section>
@@ -180,7 +182,7 @@ button{cursor:pointer}
 
 <script>
 const RATE=50, KEY='ft_schedule_v5'; // same key = old saved data stays intact
-let filter='all', statPeriod='month';
+let filter='all', statPeriod='month', searchName='', searchDate='';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 function localDate(d=new Date()){const z=new Date(d.getTime()-d.getTimezoneOffset()*60000);return z.toISOString().slice(0,10)}
 function addDays(n){let d=new Date();d.setDate(d.getDate()+n);return localDate(d)}
@@ -309,13 +311,19 @@ function render(){
 
   let shown=a.slice().sort((x,y)=>((x.date||'')+(x.time||'')).localeCompare((y.date||'')+(y.time||'')));
   if(filter==='today')shown=shown.filter(x=>x.date===td);if(filter==='tomorrow')shown=shown.filter(x=>x.date===tm);if(filter==='future')shown=shown.filter(x=>x.date>tm);
+  if(searchName)shown=shown.filter(x=>(x.name||'').toLocaleLowerCase('th-TH').includes(searchName.toLocaleLowerCase('th-TH')));
+  if(searchDate)shown=shown.filter(x=>x.date===searchDate);
   $('#allJobs').innerHTML=jobList(shown);
+  const sc=$('#searchCount'); if(sc)sc.textContent=(searchName||searchDate)?`พบ ${shown.length} รายการ`:'';
 
   const ex=a.filter(j=>(Number(j.expense)||0)>0).sort((x,y)=>(y.date||'').localeCompare(x.date||''));
   $('#expenseList').innerHTML=ex.length?ex.map(j=>`<div class="settingRow"><div><strong>${esc(j.name)}</strong><small>${fmtDate(j.date)} • ${num(j.rai)} ไร่</small></div><div class="expenseMoney">-${money(j.expense)}</div></div>`).join(''):`<div class="empty"><b>ยังไม่มีค่าใช้จ่าย</b></div>`;
   renderStats(a)
 }
 $$('.filterbar button').forEach(b=>b.addEventListener('click',()=>{$$('.filterbar button').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()}));
+$('#jobSearch').addEventListener('input',e=>{searchName=e.target.value.trim();render()});
+$('#jobSearchDate').addEventListener('change',e=>{searchDate=e.target.value;render()});
+$('#clearSearch').addEventListener('click',()=>{searchName='';searchDate='';$('#jobSearch').value='';$('#jobSearchDate').value='';render()});
 $$('.periodTabs button').forEach(b=>b.addEventListener('click',()=>{$$('.periodTabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');statPeriod=b.dataset.period;renderStats(load())}));
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 render();
