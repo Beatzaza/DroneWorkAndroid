@@ -24,8 +24,8 @@ button{cursor:pointer}
 .view{display:none}.view.active{display:block}
 
 /* KEEP THE ORIGINAL TOP AREA */
-.hero{position:relative;overflow:hidden;min-height:320px;padding:calc(16px + env(safe-area-inset-top)) 18px 18px;background:linear-gradient(180deg,#93dbff 0,#d9f5ff 48%,#6fc541 49%,#51a52c 100%)}
-.hero:after{content:"";position:absolute;inset:49% 0 0;background:repeating-linear-gradient(8deg,rgba(14,88,20,.08) 0 4px,transparent 4px 18px);pointer-events:none}
+.hero{position:relative;overflow:hidden;min-height:320px;padding:calc(16px + env(safe-area-inset-top)) 18px 18px;background-image:linear-gradient(rgba(255,255,255,.04),rgba(0,0,0,.04)),url("hero-ricefield-v64.png?v=64");background-size:cover;background-position:center center;background-repeat:no-repeat}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,0));pointer-events:none}
 .brandrow{position:relative;z-index:1;display:flex;align-items:flex-start;gap:12px}
 .brandlogo{width:142px;height:142px;border-radius:50%;object-fit:cover;box-shadow:0 8px 18px #0a223b3d;background:#fff}
 .heroText{flex:1;padding-top:6px}.title{margin:0;font-size:34px;line-height:.98;font-weight:950;color:#fff;text-shadow:0 3px 0 #102b48,2px 0 0 #102b48,-2px 0 0 #102b48}
